@@ -3,7 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-mongoose.connect('mongodb://localhost/sportdb');
+mongoose.connect('mongodb://localhost/sportsdb');
 let db = mongoose.connection;
 
 // Check connection
@@ -20,7 +20,7 @@ db.on('error',function(){
 const app = express();
 
 // Bring in Models
-let Article = require('./models/article');
+let Athlete = require('./models/athlete');
 
 //Load View Enginge
 app.set('views',path.join(__dirname,'views'));
@@ -37,12 +37,12 @@ app.use(express.static(path.join(__dirname,'public')));
 
 //Home Route
 app.get('/', function(req,res){
-  Article.find({},function(err,articles){
+  Athlete.find({},function(err,articles){
     if(err){
       console.log(err);
     }else{
       res.render('index',{
-        title:'Articles',
+        title:'Athlete List',
         articles: articles
       });
     }
@@ -51,7 +51,7 @@ app.get('/', function(req,res){
 
 // Get Single Article
 app.get('/article/:id',function(req,res){
-  Article.findById(req.params.id,function(err, article){
+  Athlete.findById(req.params.id,function(err, article){
     res.render('article',{
         article: article
       });
@@ -61,16 +61,21 @@ app.get('/article/:id',function(req,res){
 //  Add Route
 app.get('/articles/add',function(req,res){
   res.render('add_article',{
-      title:'Add Articles'
+      title:'Add Athlete'
   });
 });
 
 // Add Submit POST Route
 app.post('/articles/add',function(req,res){
-  let article = new Article();
-  article.title = req.body.title;
+  let article = new Athlete();
+  article.name = req.body.name;
+  article.lastname = req.body.lastname;
+  article.sports = req.body.sports;
+  article.program = req.body.program;
+  article.year = req.body.year;
+  article.medal = req.body.medal;
   article.author = req.body.author;
-  article.body = req.body.body;
+
 
   article.save(function(err){
     if(err){
@@ -85,7 +90,7 @@ app.post('/articles/add',function(req,res){
 
 // Load Edit Form
 app.get('/article/edit/:id',function(req,res){
-  Article.findById(req.params.id,function(err, article){
+  Athlete.findById(req.params.id,function(err, article){
     res.render('edit_article',{
         title:'Edit Article',
         article: article
@@ -96,13 +101,17 @@ app.get('/article/edit/:id',function(req,res){
 // Update Submit POST Route
 app.post('/articles/edit/:id',function(req,res){
   let article = {};
-  article.title = req.body.title;
+  article.name = req.body.name;
+  article.lastname = req.body.lastname;
+  article.sports = req.body.sports;
+  article.program = req.body.program;
+  article.year = req.body.year;
+  article.medal = req.body.medal;
   article.author = req.body.author;
-  article.body = req.body.body;
 
   let query = {_id:req.params.id}
 
-  Article.update(query,article,function(err){
+  Athlete.update(query,article,function(err){
     if(err){
       console.log(err);
       return;
@@ -117,7 +126,7 @@ app.post('/articles/edit/:id',function(req,res){
 app.delete('/article/:id', function(req, res){
   let query = {_id:req.params.id}
 
-  Article.remove(query,function(err){
+  Athlete.remove(query,function(err){
     if(err){
       console.log(err);
     }

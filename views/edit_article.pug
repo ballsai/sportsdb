@@ -4,14 +4,25 @@ block content
   h1 #{title}
   form(method='POST', action='/articles/edit/'+article._id)
     #form-group
-      label Title:
-      input.form-control(name='title', type='text', value=article.title)
+      label Name:
+      input.form-control(name='name', type='text', value=article.name)
+      label LastName:
+      input.form-control(name='lastname', type='text', value=article.lastname)
+    #form-group
+      label Sports:
+      textarea.form-control(name='body')= article.sports
+    #form-group
+      label Program:
+      input.form-control(name='program', type='text', value=article.program)
+    #form-group
+      label Year:
+      input.form-control(name='year', type='text', value=article.year)
+    #form-group
+      label Medal:
+      input.form-control(name='medal', type='text', value=article.medal)
     #form-group
       label Author:
       input.form-control(name='author', type='text', value=article.author)
-    #form-group
-      label Body:
-      textarea.form-control(name='body')= article.body
     br
     input.btn.btn-primary(type='submit', value='Submit')
    
