@@ -20,6 +20,11 @@ html
               a(href='/') Home
             li
               a(href='/articles/add') Add Article
+              
+          form.navbar-form.navbar-left(action='/')
+            .form-group
+              input.form-control(type='text', placeholder='Search')
+            button.btn.btn-default(type='submit') Submit
     .container
       block content
       br
