@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
 
 mongoose.connect('mongodb://localhost/sportsdb');
 let db = mongoose.connection;
@@ -35,6 +38,40 @@ app.use(bodyParser.json())
 // Set Public Folder
 app.use(express.static(path.join(__dirname,'public')));
 
+// Express Session Middleware
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+  //cookie: { secure: true }
+}));
+
+// Express Messages Middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+// Express Validator Middleware
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
+
+
 //Home Route
 app.get('/', function(req,res){
   Athlete.find({},function(err,articles){
@@ -67,25 +104,42 @@ app.get('/articles/add',function(req,res){
 
 // Add Submit POST Route
 app.post('/articles/add',function(req,res){
-  let article = new Athlete();
-  article.name = req.body.name;
-  article.lastname = req.body.lastname;
-  article.sports = req.body.sports;
-  article.program = req.body.program;
-  article.year = req.body.year;
-  article.medal = req.body.medal;
-  article.author = req.body.author;
+  req.checkBody('name','Name is required').notEmpty();
+  req.checkBody('lastname','Lastmame is required').notEmpty();
+  req.checkBody('sports','Sports is required').notEmpty();
+  req.checkBody('program','Program is required').notEmpty();
+  req.checkBody('year','Year is required').notEmpty();
+  req.checkBody('medal','Medal is required').notEmpty();
+  req.checkBody('author','Author is required').notEmpty();
 
+  // Get Errors
+  let errors = req.validationErrors();
 
-  article.save(function(err){
-    if(err){
-      console.log(err);
-      return;
-    } else {
-      res.redirect('/');
-      console.log('Add article Success');
-    }
-  });
+  if(errors){
+    res.render('add_article', {
+      title:'Add Athlete',
+      errors:errors
+    });
+  } else {
+    let athlete = new Athlete();
+    athlete.name = req.body.name;
+    athlete.lastname = req.body.lastname;
+    athlete.sports = req.body.sports;
+    athlete.program = req.body.program;
+    athlete.year = req.body.year;
+    athlete.medal = req.body.medal;
+    athlete.author = req.body.author;
+
+    athlete.save(function(err){
+      if(err){
+        console.log(err);
+        return;
+      } else {
+        req.flash('success','Athlete Added');
+        res.redirect('/');
+      }
+    });
+  }
 });
 
 // Load Edit Form
@@ -100,24 +154,24 @@ app.get('/article/edit/:id',function(req,res){
 
 // Update Submit POST Route
 app.post('/articles/edit/:id',function(req,res){
-  let article = {};
-  article.name = req.body.name;
-  article.lastname = req.body.lastname;
-  article.sports = req.body.sports;
-  article.program = req.body.program;
-  article.year = req.body.year;
-  article.medal = req.body.medal;
-  article.author = req.body.author;
+  let athlete = {};
+  athlete.name = req.body.name;
+  athlete.lastname = req.body.lastname;
+  athlete.sports = req.body.sports;
+  athlete.program = req.body.program;
+  athlete.year = req.body.year;
+  athlete.medal = req.body.medal;
+  athlete.author = req.body.author;
 
   let query = {_id:req.params.id}
 
-  Athlete.update(query,article,function(err){
+  Athlete.update(query,athlete,function(err){
     if(err){
       console.log(err);
       return;
     } else {
+      req.flash('success','Athlete Update');
       res.redirect('/');
-      console.log('Update success');
     }
   });
 });
