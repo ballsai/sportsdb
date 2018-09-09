@@ -26,10 +26,6 @@ let athleteSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  author:{
-    type: String,
-    required: true
-  }
 });
 
 let Athlete = module.exports = mongoose.model('Athlete', athleteSchema);

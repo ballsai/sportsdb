@@ -13,7 +13,7 @@ router.get('/add',function(req,res){
 
 // Add Submit POST Route
 router.post('/add',function(req,res){
-  req.checkBody('name','Name is required').notEmpty();
+  /*req.checkBody('name','Name is required').notEmpty();
   req.checkBody('lastname','Lastmame is required').notEmpty();
   req.checkBody('sports','Sports is required').notEmpty();
   req.checkBody('program','Program is required').notEmpty();
@@ -37,7 +37,6 @@ router.post('/add',function(req,res){
     athlete.program = req.body.program;
     athlete.year = req.body.year;
     athlete.medal = req.body.medal;
-    athlete.author = req.body.author;
 
     athlete.save(function(err){
       if(err){
@@ -48,7 +47,24 @@ router.post('/add',function(req,res){
         res.redirect('/');
       }
     });
-  }
+  }*/
+  let athlete = new Athlete();
+  athlete.name = req.body.name;
+  athlete.lastname = req.body.lastname;
+  athlete.sports = req.body.sports;
+  athlete.program = req.body.program;
+  athlete.year = req.body.year;
+  athlete.medal = req.body.medal;
+
+  athlete.save(function(err){
+    if(err){
+      console.log(err);
+      return;
+    } else {
+      req.flash('success','Athlete Added');
+      res.redirect('/');
+    }
+  });
 });
 
 // Load Edit Form
@@ -70,7 +86,6 @@ router.post('/edit/:id',function(req,res){
   athlete.program = req.body.program;
   athlete.year = req.body.year;
   athlete.medal = req.body.medal;
-  athlete.author = req.body.author;
 
   let query = {_id:req.params.id}
 
