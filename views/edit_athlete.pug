@@ -1,0 +1,28 @@
+extends layout
+    
+block content
+  h1 #{title}
+  form(method='POST', action='/athletes/edit/'+athlete._id)
+    #form-group
+      label Name:
+      input.form-control(name='name', type='text', value=athlete.name)
+      label LastName:
+      input.form-control(name='lastname', type='text', value=athlete.lastname)
+    #form-group
+      label Sports:
+      input.form-control(name='sports', type='text', value=athlete.sports)
+    #form-group
+      label Program:
+      input.form-control(name='program', type='text', value=athlete.program)
+    #form-group
+      label Year:
+      input.form-control(name='year', type='text', value=athlete.year)
+    #form-group
+      label Medal:
+      input.form-control(name='medal', type='text', value=athlete.medal)
+    #form-group
+      label Author:
+      input.form-control(name='author', type='text', value=athlete.author)
+    br
+    input.btn.btn-primary(type='submit', value='Submit')
+   

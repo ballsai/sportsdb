@@ -22,7 +22,7 @@ db.on('error',function(){
 //Init App
 const app = express();
 
-// Bring in Models
+// Bring in Athlete Models
 let Athlete = require('./models/athlete');
 
 //Load View Enginge
@@ -71,123 +71,23 @@ app.use(expressValidator({
   }
 }));
 
-
 //Home Route
 app.get('/', function(req,res){
-  Athlete.find({},function(err,articles){
+  Athlete.find({},function(err,athletes){
     if(err){
       console.log(err);
     }else{
       res.render('index',{
         title:'Athlete List',
-        articles: articles
+        athletes: athletes
       });
     }
   });
 });
 
-// Get Single Article
-app.get('/article/:id',function(req,res){
-  Athlete.findById(req.params.id,function(err, article){
-    res.render('article',{
-        article: article
-      });
-  });
-});
-
-//  Add Route
-app.get('/articles/add',function(req,res){
-  res.render('add_article',{
-      title:'Add Athlete'
-  });
-});
-
-// Add Submit POST Route
-app.post('/articles/add',function(req,res){
-  req.checkBody('name','Name is required').notEmpty();
-  req.checkBody('lastname','Lastmame is required').notEmpty();
-  req.checkBody('sports','Sports is required').notEmpty();
-  req.checkBody('program','Program is required').notEmpty();
-  req.checkBody('year','Year is required').notEmpty();
-  req.checkBody('medal','Medal is required').notEmpty();
-  req.checkBody('author','Author is required').notEmpty();
-
-  // Get Errors
-  let errors = req.validationErrors();
-
-  if(errors){
-    res.render('add_article', {
-      title:'Add Athlete',
-      errors:errors
-    });
-  } else {
-    let athlete = new Athlete();
-    athlete.name = req.body.name;
-    athlete.lastname = req.body.lastname;
-    athlete.sports = req.body.sports;
-    athlete.program = req.body.program;
-    athlete.year = req.body.year;
-    athlete.medal = req.body.medal;
-    athlete.author = req.body.author;
-
-    athlete.save(function(err){
-      if(err){
-        console.log(err);
-        return;
-      } else {
-        req.flash('success','Athlete Added');
-        res.redirect('/');
-      }
-    });
-  }
-});
-
-// Load Edit Form
-app.get('/article/edit/:id',function(req,res){
-  Athlete.findById(req.params.id,function(err, article){
-    res.render('edit_article',{
-        title:'Edit Article',
-        article: article
-      });
-  });
-});
-
-// Update Submit POST Route
-app.post('/articles/edit/:id',function(req,res){
-  let athlete = {};
-  athlete.name = req.body.name;
-  athlete.lastname = req.body.lastname;
-  athlete.sports = req.body.sports;
-  athlete.program = req.body.program;
-  athlete.year = req.body.year;
-  athlete.medal = req.body.medal;
-  athlete.author = req.body.author;
-
-  let query = {_id:req.params.id}
-
-  Athlete.update(query,athlete,function(err){
-    if(err){
-      console.log(err);
-      return;
-    } else {
-      req.flash('success','Athlete Update');
-      res.redirect('/');
-    }
-  });
-});
-
-//
-app.delete('/article/:id', function(req, res){
-  let query = {_id:req.params.id}
-
-  Athlete.remove(query,function(err){
-    if(err){
-      console.log(err);
-    }
-    res.send('Success');
-    console.log('Delete success');
-  });
-});
+// Route Files
+let athletes = require('./routes/athletes');
+app.use('/athletes',athletes);
 
 //Start Server
 app.listen(3000,function(){

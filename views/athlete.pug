@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h2= athlete.name+" "+athlete.lastname
+  p="Type: "+athlete.sports
+  p= "Program: "+athlete.program
+  p= "Year: "+athlete.year
+  p= "Medal: "+athlete.medal
+  h8 Written by #{athlete.author}
+  hr
+  a.btn.btn-default(href='/athletes/edit/'+athlete._id) Edit
+  a.btn.btn-danger.delete-athlete(href='#', data-id= athlete._id) Delete
+  

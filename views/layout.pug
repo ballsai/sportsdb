@@ -19,16 +19,14 @@ html
             li
               a(href='/') Home
             li
-              a(href='/articles/add') Add Athlete
+              a(href='/athletes/add') Add Athlete
               
           form.navbar-form.navbar-left(action='/')
             .form-group
               input.form-control(type='text', placeholder='Search')
             button.btn.btn-default(type='submit') Submit
     .container
-      != messages('message', locals)
-     
-        
+      != messages('message', locals)  
       block content
       br
       hr
